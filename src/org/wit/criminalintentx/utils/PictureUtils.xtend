@@ -41,7 +41,7 @@ public class PictureUtils
     return new BitmapDrawable(a.resources, bitmap)
   }
 
-   static def void cleanImageView(ImageView imageView)
+  static def void cleanImageView(ImageView imageView)
   {
     if (!(imageView.drawable instanceof BitmapDrawable))
       return

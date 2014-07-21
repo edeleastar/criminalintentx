@@ -3,7 +3,6 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-
   <uses-sdk
       android:minSdkVersion="16"
       android:targetSdkVersion="19" />
@@ -36,7 +35,11 @@
       <meta-data android:name="android.support.PARENT_ACTIVITY"
         android:value=".activities.CrimeListActivity"/>      
     </activity>  
-       
+
+    <activity android:name=".activities.CrimeCameraActivity"
+      android:screenOrientation="landscape"
+      android:label="@string/app_name">
+    </activity>  
     
   </application>
 

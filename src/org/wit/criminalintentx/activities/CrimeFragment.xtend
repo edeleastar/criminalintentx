@@ -5,7 +5,10 @@ import java.util.UUID;
 import org.wit.criminalintentx.R;
 import org.wit.criminalintentx.model.Crime
 import org.wit.criminalintentx.model.CrimeLab
+import org.wit.criminalintentx.model.Photo
 import org.wit.criminalintentx.utils.DatePickerFragment;
+import org.wit.criminalintentx.utils.ImageFragment
+import org.wit.criminalintentx.utils.PictureUtils
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -21,13 +24,19 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import org.wit.criminalintentx.utils.TextWatcherAdapter
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.content.pm.PackageManager
+import android.graphics.drawable.BitmapDrawable
 
 public class CrimeFragment extends Fragment
 {
   public val static String EXTRA_CRIME_ID = "criminalintent.CRIME_ID"
   
   val static DIALOG_DATE     = "date"
+  val static DIALOG_IMAGE    = "image"
   val static REQUEST_DATE    = 0
+  val static REQUEST_PHOTO   = 1
   val static REQUEST_CONTACT = 2
   
   var Crime       mCrime
@@ -36,6 +45,8 @@ public class CrimeFragment extends Fragment
   var CheckBox    mSolvedCheckBox
   var Button      mSuspectButton
   var Button      reportButton
+  var ImageButton mPhotoButton
+  var ImageView   mPhotoView
   
   var titleChanged = 
   [ 
@@ -73,6 +84,25 @@ public class CrimeFragment extends Fragment
     startActivity(i)
   ]
   
+  var photoButtonClicked =
+  [
+    var i = new Intent(activity, typeof(CrimeCameraActivity))
+    startActivityForResult(i, REQUEST_PHOTO)  
+  ]
+
+  var photoViewClicked =
+  [
+    val p = mCrime.photo
+    if (p == null)
+      return
+
+    val fm   = activity.supportFragmentManager
+    val path = activity.getFileStreamPath(p.filename).absolutePath
+    ImageFragment.createInstance(path).show(fm, DIALOG_IMAGE)
+  ]
+  
+  
+  
   def static CrimeFragment newInstance(UUID crimeId)
   {
     val args = new Bundle
@@ -102,6 +132,8 @@ public class CrimeFragment extends Fragment
     mDateButton     = v.findViewById(R.id.crime_date)          as Button
     mSuspectButton  = v.findViewById(R.id.crime_suspectButton) as Button
     reportButton    = v.findViewById(R.id.crime_reportButton)  as Button
+    mPhotoButton    = v.findViewById(R.id.crime_imageButton)   as ImageButton
+    mPhotoView      = v.findViewById(R.id.crime_imageView)     as ImageView
 
     mTitleField.text        = mCrime.title
     mSolvedCheckBox.checked = mCrime.solved
@@ -116,17 +148,29 @@ public class CrimeFragment extends Fragment
     mDateButton.onClickListener             = dateClicked
     mSuspectButton.onClickListener          = suspectClicked    
     reportButton.onClickListener            = reportClicked
+    mPhotoButton.onClickListener            = photoButtonClicked
+    mPhotoView.onClickListener              = photoViewClicked
+    
+        // if camera is not available, disable camera functionality
+    val pm = activity.packageManager
+    if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) && !pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT))
+    {
+      mPhotoButton.enabled = false
+    }
+    
     v
    }
 
   override onStop()
   {
     super.onStop
+    PictureUtils.cleanImageView(mPhotoView)
   }
   
   override onStart()
   {
     super.onStart
+    showPhoto
   }
   
   override onPause()
@@ -134,7 +178,20 @@ public class CrimeFragment extends Fragment
     super.onPause
     CrimeLab.get(activity).saveCrimes
   }
-
+  
+  def void showPhoto()
+  {
+    // (re)set the image button's image based on our photo
+    val p = mCrime.photo
+    var BitmapDrawable b = null;
+    if (p != null)
+    {
+      val path = activity.getFileStreamPath(p.getFilename()).absolutePath
+      b = PictureUtils.getScaledDrawable(activity, path);
+    }
+    mPhotoView.setImageDrawable(b)
+  }  
+  
   override onActivityResult(int requestCode, int resultCode, Intent data)
   {
     switch (requestCode)
@@ -157,7 +214,17 @@ public class CrimeFragment extends Fragment
           mSuspectButton.text = c.getString(0)
         }
         c.close
-      }                
+      }           
+      case REQUEST_PHOTO:
+      {
+        val filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+        if (filename != null)
+        {
+          val p = new Photo(filename)
+          mCrime.photo = p
+          showPhoto
+        }        
+      }     
     }
   }
 
