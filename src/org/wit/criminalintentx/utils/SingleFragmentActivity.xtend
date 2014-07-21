@@ -12,14 +12,14 @@ public abstract class SingleFragmentActivity extends FragmentActivity
   override onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState)
-    contentView = R.layout.activity_fragment
-    val manager = supportFragmentManager
+    contentView  = R.layout.activity_fragment
+    val manager  = supportFragmentManager
     var fragment = manager.findFragmentById(R.id.fragmentContainer)
 
     if (fragment == null)
     {
       fragment = createFragment
-      manager.beginTransaction().add(R.id.fragmentContainer, fragment).commit()
+      manager.beginTransaction.add(R.id.fragmentContainer, fragment).commit
     }
   }
 }

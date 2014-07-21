@@ -14,10 +14,10 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
-
+ 
 class DatePickerFragment extends DialogFragment
 {
-  val static  EXTRA_DATE = "criminalintent.DATE"
+  public val static  EXTRA_DATE = "criminalintent.DATE"
 
   var Date mDate
   

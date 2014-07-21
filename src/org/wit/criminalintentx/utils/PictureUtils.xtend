@@ -7,10 +7,10 @@ import android.widget.ImageView
 
 public class PictureUtils
 {
-  def static BitmapDrawable getScaledDrawable(Activity a, String path)
+  static def BitmapDrawable getScaledDrawable(Activity a, String path)
   {
-    val display = a.windowManager.defaultDisplay
-    val destWidth = display.getWidth();
+    val display    = a.windowManager.defaultDisplay
+    val destWidth  = display.getWidth();
     val destHeight = display.getHeight();
 
     // read in the dimensions of the image on disk
@@ -41,7 +41,7 @@ public class PictureUtils
     return new BitmapDrawable(a.resources, bitmap)
   }
 
-  def static void cleanImageView(ImageView imageView)
+   static def void cleanImageView(ImageView imageView)
   {
     if (!(imageView.drawable instanceof BitmapDrawable))
       return

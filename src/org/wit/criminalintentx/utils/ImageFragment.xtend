@@ -5,7 +5,7 @@ import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-
+ 
 public class ImageFragment extends DialogFragment
 {
   public static final String EXTRA_IMAGE_PATH = "path"
@@ -28,7 +28,7 @@ public class ImageFragment extends DialogFragment
   {
     mImageView = new ImageView(activity)
     val path   = arguments.getSerializable(EXTRA_IMAGE_PATH) as String
-    val image = PictureUtils.getScaledDrawable(activity, path)
+    val image  = PictureUtils.getScaledDrawable(activity, path)
 
     mImageView.imageDrawable = image
     mImageView
